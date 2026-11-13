@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>अन्तरक्रियात्मक क्विज</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .quiz-container { max-width: 650px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #333; font-size: 1.25rem; margin-bottom: 15px; }
+        .option-btn { display: block; width: 100%; margin: 10px 0; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background: #fff; cursor: pointer; text-align: left; transition: background 0.2s; }
+        .option-btn:hover { background-color: #f0f0f0; }
+        .correct { background-color: #76ff03 !important; font-weight: bold; border-color: #52b202; }
+        .wrong { background-color: #ff5252 !important; color: white; border-color: #c62828; }
+        .navigation-btns { margin-top: 20px; display: flex; justify-content: space-between; }
+        button.nav-btn { padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        button.nav-btn:disabled { background-color: #cccccc; cursor: not-allowed; }
+        .progress { font-size: 0.9rem; color: #666; margin-bottom: 10px; font-weight: bold; }
+        #completion-msg { margin-top: 20px; font-size: 1.4rem; font-weight: bold; text-align: center; color: #28a745; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="progress" class="progress"></div>
+    <div id="quiz"></div>
+    <div id="completion-msg">🎉 सबै प्रश्नहरूको अभ्यास पूरा भयो! बधाई छ!</div>
+    <div class="navigation-btns">
+        <button id="prev-btn" class="nav-btn" onclick="prevQuestion()" disabled>&larr; पछिल्लो (Previous)</button>
+        <button id="next-btn" class="nav-btn" onclick="nextQuestion()" style="display: none;">अर्को प्रश्न (Next Question) &rarr;</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { question: "१. नेपालको संवैधानिक इतिहासमा वर्तमान नेपालको संविधान कतिऔं संविधान हो ?", options: ["छैटौं", "सातौं", "पाँचौं", "आठौं"], answer: 1 },
+        { question: "२. पञ्चधातु र पञ्चरत्न, दुवै समूहमा पर्ने धातु कुन हो ?", options: ["हीरा", "तामा", "चाँदी", "सुन"], answer: 3 },
+        { question: "३. कुन देशले २०२६ को आईसीसी महिला टी-२० विश्वकप छनोट प्रतियोगिता आयोजना गरेको थियो ?", options: ["नेपाल", "भारत", "श्रीलंका", "बंगलादेश"], answer: 0 },
+        { question: "४. ल्यान्ड अफ आइरनको उपनामले कुन सार्क मुलुकलाई चिनिन्छ ?", options: ["अफगानिस्तान", "पाकिस्तान", "श्रीलंका", "इन्डिया"], answer: 0 },
+        { question: "५. निजी क्षेत्रको सबैभन्दा ठूलो जलविद्युत आयोजना (सोलु खोला दूधकोशी) को विद्युत उत्पादन क्षमता कति रहेको छ ?", options: ["८६ मेगावाट", "७४ मेगावाट", "६० मेगावाट", "९३ मेगावाट"], answer: 0 },
+        { question: "६. जीवहरू बाँच्नका लागि संघर्ष गर्छन्। माथिको कथन कुन सिद्धान्तसँग सम्बन्धित रहेको छ ?", options: ["डार्विन", "डिब्रिज", "लेमार्क", "मेन्डल"], answer: 0 },
+        { question: "७. भीमसेन थापाका पालामा नेपालको भौगोलिक विभाजन कति जिल्लामा रहेको थियो ?", options: ["३९ जिल्ला", "६९ जिल्ला", "३५ जिल्ला", "३७ जिल्ला"], answer: 0 },
+        { question: "८. नेपालको ८,००० मिटरभन्दा अग्ला आठवटा हिमालमध्ये सबैभन्दा पश्चिममा रहेको हिमाल कुन हो ?", options: ["अन्नपूर्ण हिमाल", "धौलागिरी हिमाल", "मनास्लु हिमाल", "कञ्चनजङ्घा हिमाल"], answer: 1 },
+        { question: "९. अन्त्य राणा प्रधानमन्त्री मोहन शमशेर कसका छोरा हुन् ?", options: ["जुद्ध शमशेर", "पद्म शमशेर", "भीम शमशेर", "चन्द्र शमशेर"], answer: 3 },
+        { question: "१०. ईयूका कति राष्ट्रमा सन् २००२ को जनवरीदेखि एकल युरो मुद्रा प्रचलनमा आएको हो ?", options: ["१३ देश", "१४ देश", "१५ देश", "१२ देश"], answer: 3 },
+        { question: "११. सार्कको कार्यकारी अंग देखाएका मध्ये कुन हो ?", options: ["कार्यकारी समिति", "शिखर सम्मेलन", "सचिवालय", "मन्त्रिपरिषद्"], answer: 3 },
+        { question: "१२. आसियनको बडापत्रमा जम्मा कतिवटा धाराहरू छन् ?", options: ["६५ वटा", "३5 वटा", "४५ वटा", "५५ वटा"], answer: 3 },
+        { question: "१३. सम्पत्ति तथा पारिवारिक मामिलामा दम्पतीको समान हक हुनेछ। यो कुरा कुन मौलिक हकसँग अन्तर्गत रहेको छ ?", options: ["महिलाको हक", "समानताको हक", "सम्पत्तिको हक", "न्यायसम्बन्धी हक"], answer: 0 },
+        { question: "१४. नेपालका लागि सान्दर्भिक नभएको दिगो विकासको लक्ष्य कुन हो ?", options: ["लक्ष्य १५", "लक्ष्य १६", "लक्ष्य १४", "लक्ष्य १७"], answer: 2 },
+        { question: "१५. २०२६ मा मनाइएको सिमसार (रामसार) दिवस कतिऔँ दिवस हो ?", options: ["३०औँ", "२९औँ", "३१औँ", "३२औँ"], answer: 0 }
+    ];
+
+    let currentQuestionIndex = 0;
+    const userAnswers = new Array(questions.length).fill(null);
+
+    function loadQuestion() {
+        document.getElementById("next-btn").style.display = "none";
+        const q = questions[currentQuestionIndex];
+        document.getElementById("progress").innerText = `प्रश्न ${currentQuestionIndex + 1} / ${questions.length}`;
+        document.getElementById("completion-msg").style.display = "none";
+        
+        let html = `<h2>${q.question}</h2>`;
+        q.options.forEach((opt, index) => {
+            let btnClass = 'option-btn';
+            let disabledAttr = '';
+            
+            if (userAnswers[currentQuestionIndex] !== null) {
+                disabledAttr = 'disabled';
+                if (index === q.answer) {
+                    btnClass += ' correct';
+                } else if (index === userAnswers[currentQuestionIndex]) {
+                    btnClass += ' wrong';
+                }
+            }
+            
+            html += `<button class="${btnClass}" ${disabledAttr} onclick="checkAnswer(${index})">${opt}</button>`;
+        });
+
+        document.getElementById("quiz").innerHTML = html;
+        document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
+    }
+
+    function checkAnswer(selectedIndex) {
+        userAnswers[currentQuestionIndex] = selectedIndex;
+        
+        const q = questions[currentQuestionIndex];
+        const buttons = document.querySelectorAll("#quiz .option-btn");
+        
+        buttons.forEach((btn, idx) => {
+            btn.disabled = true;
+            if (idx === q.answer) {
+                btn.classList.add('correct');
+            } else if (idx === selectedIndex) {
+                btn.classList.add('wrong');
+            }
+        });
+
+        document.getElementById("next-btn").style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            document.getElementById("quiz").innerHTML = "";
+            document.getElementById("progress").style.display = "none";
+            document.getElementById("prev-btn").style.display = "none";
+            document.getElementById("next-btn").style.display = "none";
+            document.getElementById("completion-msg").style.display = "block";
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
+
